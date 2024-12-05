@@ -14,15 +14,14 @@ const Scene = () => {
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
   let camera, scene, renderer;
 
-  const speed = 0.4;
+  const speed = 0.3;
   const keysPressed = {};
   const sensitivity = 0.0005;  // Mouse sensitivity (for yaw and pitch)
   let yaw = 0;
   let pitch = 0;
   let isJumping = false;
   let verticalVelocity = 0;
-  const gravity = -0.01;
-  const groundLevel = 5.585;
+  const gravity = -0.0085;
 
   // New variable for dashing
   let isDashing = false;
@@ -65,9 +64,31 @@ const Scene = () => {
     window.addEventListener('resize', handleResize);
 
     // Create platform and add to scene
-                            //x,  y,  z
-    const platform = platForm(200, 10, 100);
+    const platformWidth = 500; // x
+    const platformHeight = 10; // y
+    const platformLength = 100;// z
+    const platform = platForm(platformWidth, platformHeight, platformLength);
+    const groundLevel = platformHeight-4.409;
     scene.add(platform);
+
+    async function loadRoad(x = 0, z = 0, sx = 0.39355, sz = 0.25) {
+      try {
+        const road = await loadObject('lowpoly_road.glb', sx, 0.05, sz, setLoadingProgress); // Load player model with progress callback
+        setLoading(false); // Set loading to false after first render
+        road.position.y = groundLevel-0.68;
+        road.castShadow = true;
+        road.receiveShadow = true;
+        road.rotation.y = Math.PI/2;
+
+        road.position.x = x;
+        road.position.z = z;
+        platform.add(road);
+
+      } catch (error) {
+        console.error('Error loading player:', error);
+        setLoading(false); // Stop loading indicator on error
+      }
+    }
 
     // Load Player model (only once)
     async function loadPlayer() {
@@ -75,6 +96,7 @@ const Scene = () => {
         const player = await loadObject('slime.glb', 1, 1, 1, setLoadingProgress); // Load player model with progress callback
         setLoading(false); // Set loading to false after first render
         player.position.y = groundLevel;
+        player.position.x = (platformWidth/2)-10;
         player.castShadow = true;
         player.receiveShadow = true;
         platform.add(player);
@@ -99,6 +121,7 @@ const Scene = () => {
 
         // Handle player movement and jumping logic
         function handleMovement() {
+          // console.log(`x:${player.position.x} z:${player.position.z}`);
           // Move player based on key input
           if (keysPressed['d'] || keysPressed['ArrowRight']) {
             player.position.x += speed * Math.sin(yaw); // Move in the direction of yaw
@@ -120,11 +143,11 @@ const Scene = () => {
             player.position.z -= speed * Math.sin(yaw);
           }
 
-          player.rotation.y = yaw + ((Math.PI)/2.4);
+          player.rotation.y = yaw + ((Math.PI)/2.1);
 
           // Clamp player position within platform boundaries (optional, you can change the bounds as needed)
-          //player.position.x = Math.max(-5, Math.min(5, player.position.x));
-          //player.position.z = Math.max(-5, Math.min(5, player.position.z));
+          player.position.x = Math.max(-247.64, Math.min(247.64, player.position.x));
+          player.position.z = Math.max(-47.90 , Math.min(47.90 , player.position.z));
 
           // Handle jump (vertical movement)
           if (isJumping) {
@@ -172,6 +195,16 @@ const Scene = () => {
     }
 
     loadPlayer(); // Start loading the player model only once
+    let roadx = [];
+    for (let index = -((platformWidth/2.5)); index < ((platformWidth/2.5)); index+=50) {
+      roadx.push(index);
+    }
+
+    roadx.forEach((value) => {
+      loadRoad(value, 0);
+    });
+
+  
     
     // Keyboard controls
     function handleKeyDown(event) {
