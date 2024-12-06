@@ -12,8 +12,12 @@ const Scene = () => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
+  let vehiclePosition = [];
+  const [carSpeed, setCarSpeed] = useState(0);
+  const [score, setScore] = useState(0);
   let camera, scene, renderer;
 
+  let activeCars = new Set();
   const speed = 0.3;
   const keysPressed = {};
   const sensitivity = 0.0005;  // Mouse sensitivity (for yaw and pitch)
@@ -66,12 +70,16 @@ const Scene = () => {
     // Create platform and add to scene
     const platformWidth = 500; // x
     const platformHeight = 10; // y
-    const platformLength = 100;// z
+    const platformLength = 300;// z
     const platform = platForm(platformWidth, platformHeight, platformLength);
     const groundLevel = platformHeight-4.409;
     scene.add(platform);
 
-    async function loadRoad(x = 0, z = 0, sx = 0.39355, sz = 0.25) {
+    const gridHelper = new THREE.GridHelper(platformWidth, platformWidth/5);
+    // gridHelper.position.y = platform.scale.y + 4;
+    // platform.add(gridHelper);
+
+    async function loadRoad(x = 0, z = 0, sx = 1.3, sz = 0.25) {
       try {
         const road = await loadObject('lowpoly_road.glb', sx, 0.05, sz, setLoadingProgress); // Load player model with progress callback
         setLoading(false); // Set loading to false after first render
@@ -88,6 +96,90 @@ const Scene = () => {
         console.error('Error loading player:', error);
         setLoading(false); // Stop loading indicator on error
       }
+    }
+
+
+    async function spawnCar(x = 0, z = 0, sx = 4, sy = 4, sz = 4, rotation = Math.PI) {
+      try {
+        const vehicles = ['car-police.glb', 'car-ambulance-pickup.glb', 'car-taxi.glb', 'car-baywatch.glb', 'car-tow-truck.glb', 'car-truck-dump.glb'];
+        const car = await loadObject(vehicles[Math.floor(Math.random() * vehicles.length)], sx, sy, sz, setLoadingProgress);
+        setLoading(false);
+        car.position.set(x, groundLevel - 0.6, z);
+        car.castShadow = true;
+        car.receiveShadow = true;
+        car.rotation.y = rotation;
+    
+        platform.add(car);
+        carMove(car, 0.5);
+    
+        // Add the car to the active set
+        activeCars.add(car.position.z);
+    
+        // Set a timeout to remove the car after a period of time
+        setTimeout(() => {
+          removeGLBModel(car);
+          activeCars.delete(car.position.z); // Remove from active cars once it's gone
+        }, 6000); // Remove car after 6 seconds
+      } catch (error) {
+        console.error('Error loading vehicle:', error);
+        setLoading(false);
+      }
+    }
+    
+    function carMove(car, speed = 0.05, targetZ = 100) {
+      const moveInterval = setInterval(() => {
+        // Move the car along the Z-axis towards the targetZ
+        if (car.position.z > -(targetZ) && car.rotation.y === Math.PI) {
+          car.position.z -= speed; // Move the car towards targetZ
+        } else if (car.position.z < targetZ && car.rotation.y === 2 * Math.PI) {
+          car.position.z += speed; 
+        } else {
+          // Car has reached its destination, remove it from the scene
+          clearInterval(moveInterval);
+          removeGLBModel(car);
+          activeCars.delete(car.position.z); // Ensure the car is no longer active
+        }
+        // console.log(`CAR: ${car.position.z}`);
+        // console.log(`Player: ${player.position.z}`);
+      }, 16);
+      
+    }
+
+
+    function removeGLBModel(model) {
+      // Traverse through all children of the model
+      model.traverse((child) => {
+          if (child.isMesh) {
+              // Dispose geometry
+              child.geometry.dispose();
+              
+              // Dispose materials and their textures
+              if (child.material) {
+                  if (Array.isArray(child.material)) {
+                      child.material.forEach((material) => {
+                          disposeMaterial(material);
+                      });
+                  } else {
+                      disposeMaterial(child.material);
+                  }
+              }
+          }
+      });
+  
+      // Remove the model from its parent
+      if (model.parent) {
+          model.parent.remove(model);
+      }
+    }
+  
+    // Helper function to dispose materials and their textures
+    function disposeMaterial(material) {
+        if (material.map) material.map.dispose(); // Dispose texture map
+        if (material.lightMap) material.lightMap.dispose(); // Dispose light map
+        if (material.bumpMap) material.bumpMap.dispose(); // Dispose bump map
+        if (material.normalMap) material.normalMap.dispose(); // Dispose normal map
+        if (material.specularMap) material.specularMap.dispose(); // Dispose specular map
+        material.dispose(); // Finally dispose the material itself
     }
 
     // Load Player model (only once)
@@ -123,6 +215,7 @@ const Scene = () => {
         function handleMovement() {
           // console.log(`x:${player.position.x} z:${player.position.z}`);
           // Move player based on key input
+          if(player.position.x)
           if (keysPressed['d'] || keysPressed['ArrowRight']) {
             player.position.x += speed * Math.sin(yaw); // Move in the direction of yaw
             player.position.z += speed * Math.cos(yaw);
@@ -178,6 +271,7 @@ const Scene = () => {
 
         // Animation loop
         function animate() {
+          //console.log(`X: ${player.position.x}\nZ:${player.position.z}`);
           requestAnimationFrame(animate); // Recursive call for animation loop
 
           handleMovement(); // Update player’s position
@@ -204,7 +298,32 @@ const Scene = () => {
       loadRoad(value, 0);
     });
 
-  
+    // Track active car positions
+
+    setInterval(() => {
+      roadx.forEach((value) => {
+        // Randomly decide if a car spawns in a particular lane, avoiding intersections
+        if (Math.random() > 0.5) {
+          const spawnPosition1 = value - 10;
+          if (!activeCars.has(spawnPosition1)) {
+            spawnCar(spawnPosition1, -100, 4, 4, 4, 2 * Math.PI);
+            activeCars.add(spawnPosition1); // Mark position as occupied
+            setTimeout(() => activeCars.delete(spawnPosition1), 1500); // Free position after car is gone
+            
+          }
+        }
+
+        if (Math.random() > 0.5) {
+          const spawnPosition2 = value + 10;
+          if (!activeCars.has(spawnPosition2)) {
+            spawnCar(spawnPosition2, 100, 4, 4, 4, Math.PI);
+            activeCars.add(spawnPosition2); // Mark position as occupied
+            setTimeout(() => activeCars.delete(spawnPosition2), 1500); // Free position after car is gone
+          }
+        }
+      });
+    }, Math.floor((Math.random() * 800) + 500));
+
     
     // Keyboard controls
     function handleKeyDown(event) {
