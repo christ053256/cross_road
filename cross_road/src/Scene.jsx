@@ -18,6 +18,9 @@ const Scene = () => {
   let camera, scene, renderer;
 
   let activeCars = new Set();
+  let allCars = new Set();
+  let myPlayer;
+
   const speed = 0.3;
   const keysPressed = {};
   const sensitivity = 0.0005;  // Mouse sensitivity (for yaw and pitch)
@@ -75,10 +78,6 @@ const Scene = () => {
     const groundLevel = platformHeight-4.409;
     scene.add(platform);
 
-    const gridHelper = new THREE.GridHelper(platformWidth, platformWidth/5);
-    // gridHelper.position.y = platform.scale.y + 4;
-    // platform.add(gridHelper);
-
     async function loadRoad(x = 0, z = 0, sx = 1.3, sz = 0.25) {
       try {
         const road = await loadObject('lowpoly_road.glb', sx, 0.05, sz, setLoadingProgress); // Load player model with progress callback
@@ -114,7 +113,6 @@ const Scene = () => {
     
         // Add the car to the active set
         activeCars.add(car.position.z);
-    
         // Set a timeout to remove the car after a period of time
         setTimeout(() => {
           removeGLBModel(car);
@@ -125,7 +123,7 @@ const Scene = () => {
         setLoading(false);
       }
     }
-    
+
     function carMove(car, speed = 0.05, targetZ = 100) {
       const moveInterval = setInterval(() => {
         // Move the car along the Z-axis towards the targetZ
@@ -139,8 +137,7 @@ const Scene = () => {
           removeGLBModel(car);
           activeCars.delete(car.position.z); // Ensure the car is no longer active
         }
-        // console.log(`CAR: ${car.position.z}`);
-        // console.log(`Player: ${player.position.z}`);
+        allCars.add(car);
       }, 16);
       
     }
@@ -192,6 +189,7 @@ const Scene = () => {
         player.castShadow = true;
         player.receiveShadow = true;
         platform.add(player);
+        myPlayer = new THREE.Box3().setFromObject(player);
 
         // Movement and camera update
         function updateCamera() {
@@ -208,7 +206,22 @@ const Scene = () => {
           
             // Ensure the player is always facing the direction of yaw
             player.rotation.y = yaw + Math.PI;
-          }
+        }
+
+        function checkCollision(){
+          const playerBox = new THREE.Box3().setFromObject(player);
+          console.log(allCars);
+          allCars.forEach((car) => {
+            const carBox = new THREE.Box3().setFromObject(car);
+            if (playerBox.intersectsBox(carBox)) {
+              //Restart here all
+              player.position.x = (platformWidth/2)-10;
+              player.position.z = 0;
+            }
+          });
+          allCars = new Set();
+        }
+        
           
 
         // Handle player movement and jumping logic
@@ -241,7 +254,6 @@ const Scene = () => {
           // Clamp player position within platform boundaries (optional, you can change the bounds as needed)
           player.position.x = Math.max(-247.64, Math.min(247.64, player.position.x));
           player.position.z = Math.max(-47.90 , Math.min(47.90 , player.position.z));
-
           // Handle jump (vertical movement)
           if (isJumping) {
             player.position.y += verticalVelocity; // Update player’s vertical position
@@ -267,14 +279,20 @@ const Scene = () => {
               isDashing = false; // Reset dash state
             }
           }
+
+          
         }
 
+        
+
+        
         // Animation loop
         function animate() {
           //console.log(`X: ${player.position.x}\nZ:${player.position.z}`);
           requestAnimationFrame(animate); // Recursive call for animation loop
 
           handleMovement(); // Update player’s position
+          checkCollision();
           updateCamera(); // Update camera to always look at the player
 
           renderer.render(scene, camera); // Render the scene
@@ -308,7 +326,8 @@ const Scene = () => {
           if (!activeCars.has(spawnPosition1)) {
             spawnCar(spawnPosition1, -100, 4, 4, 4, 2 * Math.PI);
             activeCars.add(spawnPosition1); // Mark position as occupied
-            setTimeout(() => activeCars.delete(spawnPosition1), 1500); // Free position after car is gone
+            setTimeout(() => activeCars.delete(spawnPosition1)
+            , 1500); // Free position after car is gone
             
           }
         }
@@ -318,11 +337,12 @@ const Scene = () => {
           if (!activeCars.has(spawnPosition2)) {
             spawnCar(spawnPosition2, 100, 4, 4, 4, Math.PI);
             activeCars.add(spawnPosition2); // Mark position as occupied
-            setTimeout(() => activeCars.delete(spawnPosition2), 1500); // Free position after car is gone
+            setTimeout(() => 
+              activeCars.delete(spawnPosition2), 1500); // Free position after car is gone
           }
         }
       });
-    }, Math.floor((Math.random() * 800) + 500));
+    }, Math.floor((Math.random() * 1000) + 700));
 
     
     // Keyboard controls
