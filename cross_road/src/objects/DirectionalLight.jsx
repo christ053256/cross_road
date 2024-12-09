@@ -12,6 +12,7 @@ const directionalLight = (x = 1, y = 1, z = 1) => {
     directionalLight.shadow.camera.right = 50; // Right edge of the shadow camera
     directionalLight.shadow.camera.top = 50; // Top edge of the shadow camera
     directionalLight.shadow.camera.bottom = -50; // Bottom edge of the shadow camera
+    directionalLight.target.position.set(0, 0, 0);
     //add some bias to prevent shadow acne
     directionalLight.shadow.bias = -0.005;
 

@@ -8,13 +8,23 @@ import pointLight from './objects/PointLight';
 import loadObject from './objects/loadObject';
 import platForm from './objects/Platform';
 
+const background = new THREE.TextureLoader().load('blue-sky.png');
+
+const Scoreboard = ({ score, hit, speed }) => (
+  <div className="scoreboard">
+    <h2>Score: {score}</h2>
+    <h2>Hits Taken: {hit}</h2>
+    <h2>Car Speed: {speed}</h2>
+  </div>
+);
+
 const Scene = () => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
-  let vehiclePosition = [];
-  const [carSpeed, setCarSpeed] = useState(0);
+  const [carSpeed, setCarSpeed] = useState(0.5);
   const [score, setScore] = useState(0);
+  const [hit, setHit] = useState(0);
   let camera, scene, renderer;
 
   let activeCars = new Set();
@@ -44,19 +54,33 @@ const Scene = () => {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+   
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
 
     // Lighting setup
     const ambientLight = new THREE.AmbientLight(0x404040);
-    const directLight = directionalLight(5, 10, 7.5);
+    const directLight = directionalLight(0, 100, 0);
     const pointlight = pointLight(10, 10, 10);
     scene.add(directLight);
-    scene.add(ambientLight);
+    //scene.add(ambientLight);
     scene.add(pointlight);
 
     // Add a Hemisphere Light for ambient illumination
     const hemisphereLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.5); // Light from above
     scene.add(hemisphereLight);
+
+    const skyGeometry = new THREE.SphereGeometry(window.innerHeight- window.innerWidth/3, 50, 50);  // Adjust radius to suit your scene
+    const skyMaterial = new THREE.MeshBasicMaterial({
+      map: background,  // Assuming 'background' is the texture you've loaded
+      side: THREE.BackSide // To make the texture appear on the inside of the sphere
+    });
+
+    // Create the mesh
+    const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+    scene.add(sky);
+
 
     // Resize handling
     const handleResize = () => {
@@ -74,11 +98,11 @@ const Scene = () => {
     const platformWidth = 500; // x
     const platformHeight = 10; // y
     const platformLength = 300;// z
-    const platform = platForm(platformWidth, platformHeight, platformLength);
+    const platform = platForm(platformWidth, platformHeight, platformLength+300);
     const groundLevel = platformHeight-4.409;
     scene.add(platform);
 
-    async function loadRoad(x = 0, z = 0, sx = 1.3, sz = 0.25) {
+    async function loadRoad(x = 0, z = 0, sx = 3, sz = 0.25) {
       try {
         const road = await loadObject('lowpoly_road.glb', sx, 0.05, sz, setLoadingProgress); // Load player model with progress callback
         setLoading(false); // Set loading to false after first render
@@ -109,7 +133,7 @@ const Scene = () => {
         car.rotation.y = rotation;
     
         platform.add(car);
-        carMove(car, 0.5);
+        carMove(car);
     
         // Add the car to the active set
         activeCars.add(car.position.z);
@@ -124,22 +148,43 @@ const Scene = () => {
       }
     }
 
-    function carMove(car, speed = 0.05, targetZ = 100) {
+    async function loadBuilding(buildingPath, x = 0, z = 0, y = 0, sx = 0.5, sy = 0.5, sz = 0.5, rotation = Math.PI) {
+      try {
+        //const buildingGLB = 'asia_building.glb';
+        const bulding = await loadObject(buildingPath, sx, sy, sz, setLoadingProgress);
+        setLoading(false);
+        bulding.position.set(x, y, z);
+        bulding.castShadow = true;
+        bulding.receiveShadow = true;
+        bulding.rotation.y = rotation;
+    
+        platform.add(bulding);
+
+      } catch (error) {
+        console.error('Error loading building:', error);
+        setLoading(false);
+      }
+    }
+
+    function carMove(car, targetZ = 254) {
+
       const moveInterval = setInterval(() => {
         // Move the car along the Z-axis towards the targetZ
         if (car.position.z > -(targetZ) && car.rotation.y === Math.PI) {
-          car.position.z -= speed; // Move the car towards targetZ
-        } else if (car.position.z < targetZ && car.rotation.y === 2 * Math.PI) {
-          car.position.z += speed; 
+          car.position.z -= carSpeed; // Move the car towards targetZ
+        } else if (car.position.z < targetZ && car.rotation.y === (2 * Math.PI)) {
+          car.position.z += carSpeed; 
         } else {
           // Car has reached its destination, remove it from the scene
           clearInterval(moveInterval);
           removeGLBModel(car);
           activeCars.delete(car.position.z); // Ensure the car is no longer active
         }
+
         allCars.add(car);
-      }, 16);
-      
+        
+      }, 8);
+
     }
 
 
@@ -185,9 +230,8 @@ const Scene = () => {
         const player = await loadObject('slime.glb', 1, 1, 1, setLoadingProgress); // Load player model with progress callback
         setLoading(false); // Set loading to false after first render
         player.position.y = groundLevel;
-        player.position.x = (platformWidth/2)-10;
+        player.position.x = -(platformWidth/2)-10;
         player.castShadow = true;
-        player.receiveShadow = true;
         platform.add(player);
         myPlayer = new THREE.Box3().setFromObject(player);
 
@@ -203,30 +247,46 @@ const Scene = () => {
             camera.position.y = player.position.y + heightOffset;   // Adjust camera height based on pitch
           
             camera.lookAt(player.position); // Always look at the player
-          
+            camera.position.y = groundLevel+2.5;
             // Ensure the player is always facing the direction of yaw
             player.rotation.y = yaw + Math.PI;
         }
 
         function checkCollision(){
           const playerBox = new THREE.Box3().setFromObject(player);
-          console.log(allCars);
           allCars.forEach((car) => {
             const carBox = new THREE.Box3().setFromObject(car);
             if (playerBox.intersectsBox(carBox)) {
               //Restart here all
-              player.position.x = (platformWidth/2)-10;
+              player.position.x = -(platformWidth/2)-10;
               player.position.z = 0;
+
+              setHit((prev) => {
+                const newHit = prev + 1;
+                return newHit;
+              });
             }
           });
           allCars = new Set();
         }
-        
-          
 
+        function finishLine() {
+          if (player.position.x >= 170) {
+            // Update the score
+            setScore((prevScore) => prevScore + 1);
+      
+            // Increase speed (optional)
+            setCarSpeed((prevSpeed) => prevSpeed + 0.05);
+
+            // Reset player position
+            player.position.x = -(platformWidth / 2) - 10;
+            player.position.z = 0;
+          }
+        }
+        
+        
         // Handle player movement and jumping logic
         function handleMovement() {
-          // console.log(`x:${player.position.x} z:${player.position.z}`);
           // Move player based on key input
           if(player.position.x)
           if (keysPressed['d'] || keysPressed['ArrowRight']) {
@@ -250,10 +310,13 @@ const Scene = () => {
           }
 
           player.rotation.y = yaw + ((Math.PI)/2.1);
-
+          finishLine();
           // Clamp player position within platform boundaries (optional, you can change the bounds as needed)
+          //player max
           player.position.x = Math.max(-247.64, Math.min(247.64, player.position.x));
           player.position.z = Math.max(-47.90 , Math.min(47.90 , player.position.z));
+
+          //console.log(`x:${player.position.x} z:${player.position.z}`);
           // Handle jump (vertical movement)
           if (isJumping) {
             player.position.y += verticalVelocity; // Update player’s vertical position
@@ -314,8 +377,24 @@ const Scene = () => {
 
     roadx.forEach((value) => {
       loadRoad(value, 0);
+      loadBuilding('tunnel.glb',value, -205, groundLevel+8, 4, 4, 4);
+      loadBuilding('tunnel.glb',value, 205, groundLevel+8, 4, 4, 4);
     });
+    
+    let buildingZ = [];
+    for(let i = -160; i <= 160; i+=80){
+      buildingZ.push(i);
+    }
 
+    buildingZ.forEach((z)=>{
+      loadBuilding('asia_building.glb',-300, z, groundLevel-0.8);
+      loadBuilding('asia_building.glb',300, z, groundLevel-0.8);
+      loadBuilding('asia_building.glb',z, -350, groundLevel-0.8);
+      loadBuilding('asia_building.glb',z, 350, groundLevel-0.8);
+    })
+
+    
+    
     // Track active car positions
 
     setInterval(() => {
@@ -324,7 +403,7 @@ const Scene = () => {
         if (Math.random() > 0.5) {
           const spawnPosition1 = value - 10;
           if (!activeCars.has(spawnPosition1)) {
-            spawnCar(spawnPosition1, -100, 4, 4, 4, 2 * Math.PI);
+            spawnCar(spawnPosition1, -200, 4, 4, 4, 2 * Math.PI);
             activeCars.add(spawnPosition1); // Mark position as occupied
             setTimeout(() => activeCars.delete(spawnPosition1)
             , 1500); // Free position after car is gone
@@ -335,7 +414,7 @@ const Scene = () => {
         if (Math.random() > 0.5) {
           const spawnPosition2 = value + 10;
           if (!activeCars.has(spawnPosition2)) {
-            spawnCar(spawnPosition2, 100, 4, 4, 4, Math.PI);
+            spawnCar(spawnPosition2, 200, 4, 4, 4, Math.PI);
             activeCars.add(spawnPosition2); // Mark position as occupied
             setTimeout(() => 
               activeCars.delete(spawnPosition2), 1500); // Free position after car is gone
@@ -383,20 +462,24 @@ const Scene = () => {
     renderer.domElement.addEventListener('click', onClick);
 
     return () => {
+      if (mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('mousemove', onMouseMove);
       renderer.domElement.removeEventListener('click', onClick);
-      mountRef.current.removeChild(renderer.domElement);
+    
       if (renderer) {
         renderer.dispose();
       }
-    };
+    };    
   }, []); // The empty dependency array ensures that this effect runs only once
 
   return (
     <div>
+      <Scoreboard score={score} hit={hit} speed={carSpeed} />
       <div ref={mountRef} />
       {loading && <div className="loading-indicator">Loading... {loadingProgress.toFixed(2)}%</div>}
     </div>

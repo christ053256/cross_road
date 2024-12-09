@@ -1,15 +1,37 @@
 * {
-    background-color: black;
-    margin: 0;
-    padding: 0;
-  }
+  background-color: black;
+  margin: 0;
+  padding: 0;
+}
 
-  .loading-indicator {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    color: white;
-    z-index: 10; /* Ensure it appears above everything else */
-  }
+body {
+  margin: 0;
+  padding: 0; /* Ensure no extra padding on the body */
+}
+
+.loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: white;
+  z-index: 10; /* Ensure it appears above everything else */
+}
+
+.scoreboard {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: rgb(218, 40, 253);
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+.scoreboard h2, .scoreboard h3 {
+  margin: 0;
+  user-select: none;
+  background: rgb(218, 40, 253);
+}

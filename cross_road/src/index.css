@@ -1,5 +1,6 @@
 html, body {
   margin: 0;
+  padding: 0; /* Ensure no padding is applied */
   overflow: hidden; /* Prevent scrolling */
   width: 100vw; /* Full width */
   height: 100vh; /* Full height */
