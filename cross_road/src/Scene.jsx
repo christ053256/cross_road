@@ -2,14 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './Scene.css';
 
-// Import objects below here!
+// Objects Import
 import directionalLight from './objects/DirectionalLight';
 import pointLight from './objects/PointLight';
 import loadObject from './objects/loadObject';
 import platForm from './objects/Platform';
 
+//Sky background: texture loader
 const background = new THREE.TextureLoader().load('blue-sky.png');
 
+//Display Score Board
 const Scoreboard = ({ score, hit, speed }) => (
   <div className="scoreboard">
     <h2>Score: {score}</h2>
@@ -18,22 +20,35 @@ const Scoreboard = ({ score, hit, speed }) => (
   </div>
 );
 
+// Resize handling
+const handleResize = () => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+};
 
+//Main Scene
 const Scene = () => {
+  //Variables initialization
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
-  const [carSpeed, setCarSpeed] = useState(0.5);
-  const [score, setScore] = useState(0);
-  const [hit, setHit] = useState(0);
+  const [carSpeed, setCarSpeed] = useState(0.5); // state of Car speed
+  const [score, setScore] = useState(0); // state of score
+  const [hit, setHit] = useState(0); // state of player being hit by a vehicle
+
   let camera, scene, renderer;
 
+  //For Car objects and Position
   let activeCars = new Set();
   let allCars = new Set();
-  let myPlayer;
 
-  const speed = 0.3;
-  const keysPressed = {};
+  let myPlayer; // Player hit box
+  const speed = 0.3; //Player speed
+  const keysPressed = {}; // Player's keys
   const sensitivity = 0.0005;  // Mouse sensitivity (for yaw and pitch)
   let yaw = 0;
   let pitch = 0;
@@ -81,17 +96,6 @@ const Scene = () => {
     // Create the mesh
     const sky = new THREE.Mesh(skyGeometry, skyMaterial);
     scene.add(sky);
-
-
-    // Resize handling
-    const handleResize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    };
 
     window.addEventListener('resize', handleResize);
 
@@ -168,7 +172,6 @@ const Scene = () => {
     }
 
     function carMove(car, targetZ = 254) {
-
       const moveInterval = setInterval(() => {
         // Move the car along the Z-axis towards the targetZ
         if (car.position.z > -(targetZ) && car.rotation.y === Math.PI) {
@@ -181,13 +184,9 @@ const Scene = () => {
           removeGLBModel(car);
           activeCars.delete(car.position.z); // Ensure the car is no longer active
         }
-
         allCars.add(car);
-        
       }, 8);
-
     }
-
 
     function removeGLBModel(model) {
       // Traverse through all children of the model
@@ -208,7 +207,6 @@ const Scene = () => {
               }
           }
       });
-  
       // Remove the model from its parent
       if (model.parent) {
           model.parent.remove(model);
@@ -364,11 +362,13 @@ const Scene = () => {
 
         animate(); // Start animation loop after loading the player
 
+        
       } catch (error) {
         console.error('Error loading player:', error);
         setLoading(false); // Stop loading indicator on error
       }
     }
+
 
     loadPlayer(); // Start loading the player model only once
     let roadx = [];
@@ -376,16 +376,20 @@ const Scene = () => {
       roadx.push(index);
     }
 
+
+    //Loading building and with their corresponding position
     roadx.forEach((value) => {
       loadRoad(value, 0);
       loadBuilding('tunnel.glb',value, -205, groundLevel+8, 4, 4, 4);
       loadBuilding('tunnel.glb',value, 205, groundLevel+8, 4, 4, 4);
     });
     
+
     let buildingZ = [];
     for(let i = -160; i <= 160; i+=80){
       buildingZ.push(i);
     }
+
 
     buildingZ.forEach((z)=>{
       //async function loadBuilding(buildingPath, x = 0, z = 0, y = 0, sx = 0.5, sy = 0.5, sz = 0.5, rotation = Math.PI)
@@ -393,12 +397,8 @@ const Scene = () => {
       loadBuilding('asia_building.glb',300, z, groundLevel-0.8);
       loadBuilding('chicago_buildings.glb',z, -230, groundLevel+6, 1, 1, 1, 2* Math.PI);
       loadBuilding('asia_building.glb',z, 350, groundLevel-0.8);
-    })
+    });
 
-
-
-    
-    // Track active car positions
 
     setInterval(() => {
       roadx.forEach((value) => {
@@ -427,6 +427,7 @@ const Scene = () => {
     }, Math.floor((Math.random() * 1000) + 700));
 
     
+
     // Keyboard controls
     function handleKeyDown(event) {
       keysPressed[event.key] = true;
@@ -459,10 +460,14 @@ const Scene = () => {
       renderer.domElement.requestPointerLock();
     }
 
+
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('mousemove', onMouseMove);
     renderer.domElement.addEventListener('click', onClick);
+
+
 
     return () => {
       if (mountRef.current) {
@@ -480,6 +485,8 @@ const Scene = () => {
     };    
   }, []); // The empty dependency array ensures that this effect runs only once
 
+
+
   return (
     <div>
       <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*10)} />
@@ -488,5 +495,6 @@ const Scene = () => {
     </div>
   );
 };
+
 
 export default Scene;
