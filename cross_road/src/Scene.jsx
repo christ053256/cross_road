@@ -18,6 +18,7 @@ const Scoreboard = ({ score, hit, speed }) => (
   </div>
 );
 
+
 const Scene = () => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -71,7 +72,7 @@ const Scene = () => {
     const hemisphereLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.5); // Light from above
     scene.add(hemisphereLight);
 
-    const skyGeometry = new THREE.SphereGeometry(window.innerHeight- window.innerWidth/3, 50, 50);  // Adjust radius to suit your scene
+    const skyGeometry = new THREE.SphereGeometry(window.innerHeight, 50, 50);  // Adjust radius to suit your scene
     const skyMaterial = new THREE.MeshBasicMaterial({
       map: background,  // Assuming 'background' is the texture you've loaded
       side: THREE.BackSide // To make the texture appear on the inside of the sphere
@@ -387,13 +388,24 @@ const Scene = () => {
     }
 
     buildingZ.forEach((z)=>{
+      //async function loadBuilding(buildingPath, x = 0, z = 0, y = 0, sx = 0.5, sy = 0.5, sz = 0.5, rotation = Math.PI)
       loadBuilding('asia_building.glb',-300, z, groundLevel-0.8);
       loadBuilding('asia_building.glb',300, z, groundLevel-0.8);
-      loadBuilding('asia_building.glb',z, -350, groundLevel-0.8);
+      loadBuilding('chicago_buildings.glb',z, -230, groundLevel+6, 1, 1, 1, 2* Math.PI);
       loadBuilding('asia_building.glb',z, 350, groundLevel-0.8);
     })
 
-    
+  
+    let vendingX = [];
+    for(let i = -100; i <= 100; i+=35){
+      vendingX.push(i);
+    }
+
+    vendingX.forEach((x)=>{
+      loadBuilding('vending_machine.glb', -255, x, groundLevel-0.8, 3.5, 3.5, 3.5, 2* Math.PI);
+      loadBuilding('vending_machine.glb', -250, x, groundLevel-0.8, 3.5, 3.5, 3.5, 2*Math.PI);
+    })
+
     
     // Track active car positions
 
