@@ -395,16 +395,7 @@ const Scene = () => {
       loadBuilding('asia_building.glb',z, 350, groundLevel-0.8);
     })
 
-  
-    let vendingX = [];
-    for(let i = -100; i <= 100; i+=35){
-      vendingX.push(i);
-    }
 
-    vendingX.forEach((x)=>{
-      loadBuilding('vending_machine.glb', -255, x, groundLevel-0.8, 3.5, 3.5, 3.5, 2* Math.PI);
-      loadBuilding('vending_machine.glb', -250, x, groundLevel-0.8, 3.5, 3.5, 3.5, 2*Math.PI);
-    })
 
     
     // Track active car positions
