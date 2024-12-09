@@ -284,7 +284,7 @@ const Scene = () => {
           }
         }
         
-        
+
         // Handle player movement and jumping logic
         function handleMovement() {
           // Move player based on key input
@@ -479,7 +479,7 @@ const Scene = () => {
 
   return (
     <div>
-      <Scoreboard score={score} hit={hit} speed={carSpeed} />
+      <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*10)} />
       <div ref={mountRef} />
       {loading && <div className="loading-indicator">Loading... {loadingProgress.toFixed(2)}%</div>}
     </div>
