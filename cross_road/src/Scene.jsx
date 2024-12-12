@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './Scene.css';
+import gsap from 'gsap';
 
 // Objects Import
 import directionalLight from './objects/DirectionalLight';
@@ -16,10 +17,24 @@ let camera, scene, renderer;
 const Scoreboard = ({ score, hit, speed }) => (
   <div className="scoreboard">
     <h2>Level: {score+1}</h2>
-    <h2>Hits Taken: {hit}</h2>
+    <h2>Life: {hit}</h2>
     <h2>Car Speed: {speed}</h2>
   </div>
 );
+
+const HitPause = ({ onContinue, onQuit }) => {
+  return (
+    <div className="HitPause">
+      <h2>You got hit by a vehicle!</h2>
+      <h3>Game Paused</h3>
+      <div className="button-container">
+        <button className="continue-button" onClick={onContinue}>Continue</button>
+        <button className="quit-button" onClick={onQuit}>Quit</button>
+      </div>
+    </div>
+  );
+};
+
 
 // Resize handling
 const handleResize = () => {
@@ -39,8 +54,9 @@ const Scene = () => {
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
   const [carSpeed, setCarSpeed] = useState(0.5); // state of Car speed
   const [score, setScore] = useState(0); // state of score
-  const [hit, setHit] = useState(0); // state of player being hit by a vehicle
-
+  const [hit, setHit] = useState(5); // state of player being hit by a vehicle
+  const [showHit, setShowHit] = useState(false);
+  const [pause, setPause] = useState(false);
 
   //For Car objects and Position
   let activeCars = new Set();
@@ -260,15 +276,23 @@ const Scene = () => {
               //Restart here all
               player.position.x = -(platformWidth/2)-10;
               player.position.z = 0;
+              setShowHit(true);
               setHit((prev) => {
-                const newHit = prev + 1;
+                let newHit
+                if(prev === 1){
+                  newHit = 5;
+                  setScore(0);
+                  setCarSpeed(0.5);
+                }else{
+                  newHit = prev - 1;
+                }
                 return newHit;
               });
-              alert('You got hit.');
               const movement = ['w', 's', 'a', 'd', 'arrowUp', 'arrowDown', 'arrowRight', 'arrowLeft'];
               movement.forEach((keys) =>{
                 keysPressed[keys] = false;
               });
+
             }
           });
           allCars = new Set();
@@ -328,19 +352,37 @@ const Scene = () => {
           //console.log(`x:${player.position.x} z:${player.position.z}`);
           // Handle jump (vertical movement)
           if (isJumping) {
-            player.position.y += verticalVelocity; // Update player’s vertical position
-            verticalVelocity += gravity; // Apply gravity
-            
-            player.scale.set(0.7, 0.7, 1);
-
+            // Update player’s vertical position
+            player.position.y += verticalVelocity; 
+          
+            // Apply gravity
+            verticalVelocity += gravity; 
+          
+            // Add slime-like squish/stretch effect
+            if (verticalVelocity > 0) {
+              // While ascending, stretch vertically and compress horizontally
+              player.scale.set(0.8, 1.2, 1);
+            } else {
+              // While descending, compress vertically and stretch horizontally
+              player.scale.set(1.2, 0.8, 1);
+            }
+          
             // Check if the player lands back on the ground
             if (player.position.y <= groundLevel) {
               player.position.y = groundLevel; // Stop at ground level
               isJumping = false; // End jump
               verticalVelocity = 0; // Reset vertical velocity
-              player.scale.set(1,1,1);
+          
+              // Smooth transition back to default scale
+              gsap.to(player.scale, {
+                x: 1,
+                y: 1,
+                duration: 0.2,
+                ease: "elastic.out(1, 0.3)"
+              });
             }
           }
+          
 
           // Dash forward if the dash key (Q) is pressed
           if (isDashing) {
@@ -501,13 +543,21 @@ const Scene = () => {
 
   return (
     <div>
+      {showHit && <HitPause onContinue={() => 
+        {
+          console.log('Continuing the game');
+          setShowHit(false);
+        }
+      } 
+        onQuit={
+          () => console.log('Leaving the game')
+        }
+      />}
       <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*10)} />
       <div ref={mountRef} />
       {loading && <div className="loading-indicator">Loading... {loadingProgress.toFixed(2)}%</div>}
     </div>
   );
 };
-
-
 
 export default Scene;

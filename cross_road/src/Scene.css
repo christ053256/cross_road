@@ -1,12 +1,18 @@
+/* General Reset - Only for Specific Components */
 * {
-  background-color: black;
   margin: 0;
   padding: 0;
 }
 
+/* Body Styling */
 body {
   margin: 0;
-  padding: 0; /* Ensure no extra padding on the body */
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e1f7ff; /* Light blue background for the page */
 }
 
 .loading-indicator {
@@ -23,15 +29,124 @@ body {
   position: fixed;
   top: 10px;
   left: 10px;
-  background-color: rgb(218, 40, 253);
-  color: white;
-  padding: 10px;
+  background: repeating-linear-gradient(135deg, #1b1d2b, #1b1d2b 10px, #283044 10px, #283044 20px);
+  color: #ffcc00;
+  padding: 15px;
   font-size: 18px;
-  border-radius: 5px;
+  border: 3px solid #00ffcc;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+  text-align: center;
+  font-family: 'Press Start 2P', cursive;
+  transform: scale(1);
+  transition: transform 0.2s;
+}
+
+.scoreboard:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 255, 255, 0.6);
 }
 
 .scoreboard h2, .scoreboard h3 {
-  margin: 0;
-  user-select: none;
-  background: rgb(218, 40, 253);
+  margin: 5px 0;
+  color: #ffcc00;
+  text-shadow: 2px 2px 0 #000000;
+  position: relative;
+}
+
+.scoreboard h2 {
+  background-color: transparent;
+  font-size: 24px;
+}
+
+
+.scoreboard h2::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: #ffcc00;
+  left: 0;
+  bottom: -5px;
+  box-shadow: 0 0 4px rgba(255, 255, 0, 0.8);
+}
+
+.scoreboard::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 255, 0, 0.2));
+  border-radius: 10px;
+  z-index: -1;
+  animation: pixel-glow 1.5s infinite alternate;
+}
+
+@keyframes pixel-glow {
+  0% {
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 16px rgba(255, 255, 0, 0.8);
+  }
+}
+
+.scoreboard h2 span {
+  display: inline-block;
+  border-bottom: 2px solid #ffcc00;
+  padding: 2px 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  background: none;
+  border: none;
+}
+
+
+.HitPause {
+  position: absolute; /* Absolute positioning */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust position to truly center */
+  background-color: #4a90e2; /* Light blue background */
+  border-radius: 20px; /* Rounded corners */
+  padding: 20px; /* Spacing inside the box */
+  width: 300px; /* Fixed width for square box */
+  text-align: center; /* Center text alignment */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+}
+
+.HitPause h2 {
+  color: #ffffff; /* White text for contrast */
+  font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun font style */
+  padding: 5px;
+}
+
+.HitPause h3 {
+  color: #e1f5fe; /* Slightly lighter blue for subheading */
+  padding: 5px;
+}
+
+.button-container {
+  display: flex; /* Flexbox for button layout */
+  justify-content: space-around; /* Space between buttons */
+}
+
+.continue-button, .quit-button {
+  margin-top: 5px;
+  background-color: #0004ff; /* Button background color */
+  color: white; /* Button text color */
+  border: none; /* No border */
+  border-radius: 10px; /* Rounded button corners */
+  padding: 10px 15px; /* Button padding */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.continue-button:hover {
+  background-color: #2196f3; /* Darker blue on hover for continue button */
+}
+
+.quit-button:hover {
+  background-color: #ff5252; /* Red on hover for quit button */
 }

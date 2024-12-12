@@ -1,0 +1,71 @@
+.hit-ui-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .hit-ui-rectangle {
+    background-color: rgba(0, 0, 255, 0.8); /* Slightly transparent blue */
+    border: 4px solid #00bfff; /* Bright blue border */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 255, 0.6);
+    width: 250px;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive; /* Pixel-like font */
+  }
+  
+  .hit-ui-rectangle h2 {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .hit-ui-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .hit-ui-button {
+    background-color: rgba(0, 0, 255, 0.5);
+    border: 2px solid #00bfff;
+    color: #ffffff;
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .hit-ui-button:hover {
+    background-color: rgba(0, 0, 255, 0.8);
+  }
+  
+  .hit-ui-button:focus {
+    outline: none;
+  }
+  
+  .hit-ui-button.continue {
+    background-color: rgba(0, 255, 0, 0.5); /* Greenish for continue button */
+  }
+  
+  .hit-ui-button.continue:hover {
+    background-color: rgba(0, 255, 0, 0.8);
+  }
+  
+  .hit-ui-button.quit {
+    background-color: rgba(255, 0, 0, 0.5); /* Red for quit button */
+  }
+  
+  .hit-ui-button.quit:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+  }
+  
