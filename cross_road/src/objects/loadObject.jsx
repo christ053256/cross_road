@@ -10,7 +10,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
  * @returns {Promise<THREE.Group>} A promise that resolves with the loaded object.
  */
 const loadObject = (url, x = 1, y = 1, z = 1, onProgress) => {
-  const loader = new GLTFLoader();
+  const loader = new GLTFLoader();  
 
   // Validate parameters
   if (typeof x !== 'number' || typeof y !== 'number' || typeof z !== 'number') {
