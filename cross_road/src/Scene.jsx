@@ -580,7 +580,6 @@ const Scene = () => {
       {showHit && <HitPause onContinue={() => 
         {
           console.log('Continuing the game');
-          Scene();
           setShowHit(false);
           setShowScoreBoard(true);
         }

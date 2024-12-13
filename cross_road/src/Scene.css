@@ -108,22 +108,27 @@ body {
 
 
 .HitPause {
-  position: absolute; /* Absolute positioning */
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Adjust position to truly center */
-  background-color: #4a90e2; /* Light blue background */
-  border-radius: 20px; /* Rounded corners */
-  padding: 20px; /* Spacing inside the box */
-  width: 300px; /* Fixed width for square box */
-  text-align: center; /* Center text alignment */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  width: 300px;
+  height: 150px;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #1a1d42; /* Dark blue background */
+  color: #ffffff; /* White text color */
+  padding: 10px 10px;
+  border: 5px solid #3c66f5; /* Pixelated blue border */
+  border-radius: 10px;
+  box-shadow: 0 0 15px #3c66f5; /* Glowing effect */
+  font-family: 'Press Start 2P', cursive; /* Pixel-style font */
+  margin: 250px 400px;
 }
 
-.HitPause h2 {
-  color: #ffffff; /* White text for contrast */
-  font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun font style */
-  padding: 5px;
+.HitPause h2{
+  padding: 10px;
+  margin: 10px 10px;
 }
 
 .HitPause h3 {
@@ -143,6 +148,7 @@ body {
   border: none; /* No border */
   border-radius: 10px; /* Rounded button corners */
   padding: 10px 15px; /* Button padding */
+  margin: 10px 10px;
   cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
@@ -194,7 +200,7 @@ body {
 }
 
 /* Heading style */
-.scoreboard h2, .GameFinish h2, .GameIntro h2 {
+.HitPause h2, .scoreboard h2, .GameFinish h2, .GameIntro h2 {
   font-size: 24px;
   margin-bottom: 10px;
   text-shadow: 2px 2px #3c66f5;
