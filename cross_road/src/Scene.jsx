@@ -25,7 +25,7 @@ const Scoreboard = ({ score, hit, speed }) => (
 const HitPause = ({ onContinue, onQuit }) => {
   return (
     <div className="HitPause">
-      <h2>You got hit by a vehicle!</h2>
+      <h2>Game over!</h2>
       <h3>Game Paused</h3>
       <div className="button-container">
         <button className="continue-button" onClick={onContinue}>Continue</button>
@@ -34,6 +34,34 @@ const HitPause = ({ onContinue, onQuit }) => {
     </div>
   );
 };
+
+const GameFinish =({onContinue}) =>{
+  return(
+    <div className="GameFinish">
+      <h2>You made it!</h2>
+      <h3>Advancing to the next level!</h3>
+      <div className="button-container">
+        <button className="continue-button" onClick={onContinue}>Continue</button>
+      </div>
+    </div>
+  );
+};
+
+const GameIntro = ({ onContinue }) => {
+  return (
+    <div className="GameIntro">
+      <h2>Welcome to Slime on Road</h2>
+      <p>Help Rimuru cross the chaotic streets without getting hit 5 times!</p>
+      <p>
+        Navigate through speeding vehicles. Use Rimuru’s special abilities like jumping, teleporting press 'q', and quick reflexes to survive!
+      </p>
+      <div className="button-container">
+        <button className="continue-button" onClick={onContinue}>Continue</button>
+      </div>
+    </div>
+  );
+};
+
 
 
 // Resize handling
@@ -56,6 +84,9 @@ const Scene = () => {
   const [score, setScore] = useState(0); // state of score
   const [hit, setHit] = useState(5); // state of player being hit by a vehicle
   const [showHit, setShowHit] = useState(false);
+  const [showScoreBoard, setShowScoreBoard] = useState(false);
+  const [showFinish, setShowFinish] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [pause, setPause] = useState(false);
 
   //For Car objects and Position
@@ -276,13 +307,15 @@ const Scene = () => {
               //Restart here all
               player.position.x = -(platformWidth/2)-10;
               player.position.z = 0;
-              setShowHit(true);
+              
               setHit((prev) => {
                 let newHit
                 if(prev === 1){
                   newHit = 5;
                   setScore(0);
                   setCarSpeed(0.5);
+                  setShowHit(true);
+                  setShowScoreBoard(false);
                 }else{
                   newHit = prev - 1;
                 }
@@ -305,11 +338,12 @@ const Scene = () => {
       
             // Increase speed (optional)
             setCarSpeed((prevSpeed) => prevSpeed + 0.05);
-
+            setShowFinish(true);
+            setShowScoreBoard(false);
             // Reset player position
             player.position.x = -(platformWidth / 2) - 10;
             player.position.z = 0;
-            alert('God Job!.');
+            
               const movement = ['w', 's', 'a', 'd', 'arrowUp', 'arrowDown', 'arrowRight', 'arrowLeft'];
               movement.forEach((keys) =>{
                 keysPressed[keys] = false;
@@ -361,10 +395,10 @@ const Scene = () => {
             // Add slime-like squish/stretch effect
             if (verticalVelocity > 0) {
               // While ascending, stretch vertically and compress horizontally
-              player.scale.set(0.8, 1.2, 1);
+              player.scale.set(0.7, 1.1, 1);
             } else {
               // While descending, compress vertically and stretch horizontally
-              player.scale.set(1.2, 0.8, 1);
+              player.scale.set(1.1, 0.7, 1);
             }
           
             // Check if the player lands back on the ground
@@ -546,14 +580,33 @@ const Scene = () => {
       {showHit && <HitPause onContinue={() => 
         {
           console.log('Continuing the game');
+          Scene();
           setShowHit(false);
+          setShowScoreBoard(true);
         }
       } 
         onQuit={
           () => console.log('Leaving the game')
         }
       />}
-      <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*10)} />
+
+      {showFinish && <GameFinish onContinue={() => 
+        {
+          console.log('Continuing the game');
+          setShowFinish(false);
+          setShowScoreBoard(true);
+        }
+      } />}
+
+      {(!loading && showIntro) && <GameIntro onContinue={() => 
+        {
+          console.log('Continuing the game');
+          setShowIntro(false);
+          setShowScoreBoard(true);
+        }
+      } />}
+      
+      {showScoreBoard && <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*10)} />}
       <div ref={mountRef} />
       {loading && <div className="loading-indicator">Loading... {loadingProgress.toFixed(2)}%</div>}
     </div>

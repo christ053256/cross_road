@@ -1,18 +1,25 @@
+
+/* Ensure the font is imported */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 /* General Reset - Only for Specific Components */
 * {
+  user-select: none;
   margin: 0;
   padding: 0;
 }
 
 /* Body Styling */
 body {
+  background-image: url('https://www.transparenttextures.com/patterns/squares.png');
+  background-color: #1a1d42;
   margin: 0;
   padding: 0;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e1f7ff; /* Light blue background for the page */
+  
 }
 
 .loading-indicator {
@@ -29,17 +36,18 @@ body {
   position: fixed;
   top: 10px;
   left: 10px;
-  background: repeating-linear-gradient(135deg, #1b1d2b, #1b1d2b 10px, #283044 10px, #283044 20px);
-  color: #ffcc00;
+  background-color: #1a1d42; /* Dark blue background */
+  color: #ffffff; /* White text color */
+  border: 5px solid #3c66f5; /* Pixelated blue border */
+  border-radius: 10px;
   padding: 15px;
   font-size: 18px;
-  border: 3px solid #00ffcc;
-  border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
   text-align: center;
   font-family: 'Press Start 2P', cursive;
   transform: scale(1);
   transition: transform 0.2s;
+  margin-top: 550px;
 }
 
 .scoreboard:hover {
@@ -47,18 +55,14 @@ body {
   box-shadow: 0 6px 16px rgba(0, 255, 255, 0.6);
 }
 
-.scoreboard h2, .scoreboard h3 {
+.scoreboard h2{
   margin: 5px 0;
-  color: #ffcc00;
-  text-shadow: 2px 2px 0 #000000;
+  color: white;
   position: relative;
-}
-
-.scoreboard h2 {
   background-color: transparent;
-  font-size: 24px;
+  padding: 1px;
+  margin-top: 11px;
 }
-
 
 .scoreboard h2::after {
   content: '';
@@ -150,3 +154,86 @@ body {
 .quit-button:hover {
   background-color: #ff5252; /* Red on hover for quit button */
 }
+
+.GameFinish{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #1a1d42; /* Dark blue background */
+  color: #ffffff; /* White text color */
+  padding: 20px;
+  border: 5px solid #3c66f5; /* Pixelated blue border */
+  border-radius: 10px;
+  box-shadow: 0 0 15px #3c66f5; /* Glowing effect */
+  font-family: 'Press Start 2P', cursive; /* Pixel-style font */
+  max-width: 600px;
+  margin: 250px 350px;
+}
+
+
+/* General styles for the GameIntro component */
+.GameIntro {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #1a1d42; /* Dark blue background */
+  color: #ffffff; /* White text color */
+  padding: 20px;
+  border: 5px solid #3c66f5; /* Pixelated blue border */
+  border-radius: 10px;
+  box-shadow: 0 0 15px #3c66f5; /* Glowing effect */
+  font-family: 'Press Start 2P', cursive; /* Pixel-style font */
+  max-width: 600px;
+  margin: 150px 300px;
+}
+
+/* Heading style */
+.scoreboard h2, .GameFinish h2, .GameIntro h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px #3c66f5;
+}
+
+/* Paragraph styles */
+.GameFinish, .GameIntro p {
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Container for the button */
+.GameFinish .button-container, .GameIntro .button-container {
+  margin-top: 20px;
+}
+
+/* Button styles */
+.GameFinish .continue-button, .GameIntro .continue-button {
+  background-color: #3c66f5; /* Bright blue button */
+  color: #ffffff; /* White text */
+  border: 2px solid #ffffff; /* White border */
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Press Start 2P', cursive;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #3c66f5, 0 0 20px #3c66f5;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.GameFinish .continue-button, .GameIntro .continue-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #3c66f5, 0 0 30px #3c66f5;
+}
+
+.GameFinish .continue-button, .GameIntro .continue-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 5px #3c66f5;
+}
+
+
