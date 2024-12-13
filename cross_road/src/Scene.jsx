@@ -598,7 +598,7 @@ const Scene = () => {
         }
       } />}
 
-      {(!loading && showIntro) && <GameIntro onContinue={() => 
+      {showIntro && <GameIntro onContinue={() => 
         {
           console.log('Continuing the game');
           setShowIntro(false);
