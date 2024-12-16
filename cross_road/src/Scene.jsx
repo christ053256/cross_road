@@ -497,7 +497,7 @@ const Scene = () => {
             spawnCar(spawnPosition1, -200, 4, 4, 4, 2 * Math.PI);
             activeCars.add(spawnPosition1); // Mark position as occupied
             setTimeout(() => activeCars.delete(spawnPosition1)
-            , 1000); // Free position after car is gone
+            , 1500); // Free position after car is gone
             
           }
         }
@@ -508,7 +508,7 @@ const Scene = () => {
             spawnCar(spawnPosition2, 200, 4, 4, 4, Math.PI);
             activeCars.add(spawnPosition2); // Mark position as occupied
             setTimeout(() => 
-              activeCars.delete(spawnPosition2), 1000); // Free position after car is gone
+              activeCars.delete(spawnPosition2), 1500); // Free position after car is gone
           }
         }
       });
