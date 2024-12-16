@@ -1,12 +1,19 @@
+* {
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  margin: 0; /* Reset all margins */
+  padding: 0; /* Reset all padding */
+}
+
 html, body {
-  margin: 0;
-  padding: 0; /* Ensure no padding is applied */
   overflow: hidden; /* Prevent scrolling */
+  margin: 0; /* Ensure no margin is applied */
+  padding: 0; /* Ensure no padding is applied */
   width: 100vw; /* Full width */
   height: 100vh; /* Full height */
 }
 
 #yourCanvasId {
-  width: 100%;
-  height: 100%;
+  display: block; /* Remove inline spacing caused by default canvas styling */
+  width: 100%; /* Ensure full width */
+  height: 100%; /* Ensure full height */
 }
