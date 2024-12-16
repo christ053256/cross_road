@@ -53,7 +53,7 @@ const GameIntro = ({ onContinue }) => {
       <h2>Welcome to Slime on Road</h2>
       <p>Help Rimuru cross the chaotic streets without getting hit 5 times!</p>
       <p>
-        Navigate through speeding vehicles. Use Rimuru’s special abilities like jumping, teleporting press 'q', and quick reflexes to survive!
+        Navigate through speeding vehicles. Use Rimuru’s special abilities like jumping, teleporting press 'q' 3 seconds coldown, and quick reflexes to survive!
       </p>
       <div className="button-container">
         <button className="continue-button" onClick={onContinue}>Continue</button>
