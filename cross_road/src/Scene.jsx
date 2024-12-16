@@ -157,7 +157,7 @@ const Scene = () => {
 
     async function loadRoad(x = 0, z = 0, sx = 3, sz = 0.25) {
       try {
-        const road = await loadObject('lowpoly_road.glb', sx, 0.05, sz, setLoadingProgress); // Load player model with progress callback
+        const road = await loadObject('lowpoly_road.glb', sx, 0.05, sz, setLoadingProgress); // Load model with progress callback
         setLoading(false); // Set loading to false after first render
         road.position.y = groundLevel-0.68;
         road.castShadow = true;
@@ -233,7 +233,7 @@ const Scene = () => {
           activeCars.delete(car.position.z); // Ensure the car is no longer active
         }
         allCars.add(car);
-      }, 8);
+      }, 4);
     }
 
     function removeGLBModel(model) {
@@ -497,7 +497,7 @@ const Scene = () => {
             spawnCar(spawnPosition1, -200, 4, 4, 4, 2 * Math.PI);
             activeCars.add(spawnPosition1); // Mark position as occupied
             setTimeout(() => activeCars.delete(spawnPosition1)
-            , 1500); // Free position after car is gone
+            , 1000); // Free position after car is gone
             
           }
         }
@@ -508,11 +508,11 @@ const Scene = () => {
             spawnCar(spawnPosition2, 200, 4, 4, 4, Math.PI);
             activeCars.add(spawnPosition2); // Mark position as occupied
             setTimeout(() => 
-              activeCars.delete(spawnPosition2), 1500); // Free position after car is gone
+              activeCars.delete(spawnPosition2), 1000); // Free position after car is gone
           }
         }
       });
-    }, Math.floor((Math.random() * 1000) + 700));
+    }, Math.floor((Math.random() * 800) + 500));
 
     
 
