@@ -324,9 +324,12 @@ const Scene = () => {
             const carBox = new THREE.Box3().setFromObject(car);
             if (playerBox.intersectsBox(carBox)) {
               // Configure and play the audio
-              hitSoundEffect.loop = false;
-              hitSoundEffect.volume = 1;
-              hitSoundEffect.play();
+              
+              useEffect(() => {
+                hitSoundEffect.loop = false;
+                hitSoundEffect.volume = 1;
+                hitSoundEffect.play();
+              }, []); // Empty dependency array ensures this runs only once on mount
    
               // Restart here
               player.position.x = -(platformWidth / 2) - 10;
