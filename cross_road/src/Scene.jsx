@@ -218,6 +218,7 @@ const Scene = () => {
     }
 
     async function loadBuilding(buildingPath, x = 0, z = 0, y = 0, sx = 0.5, sy = 0.5, sz = 0.5, rotation = Math.PI) {
+      setLoading(true);
       try {
         //const buildingGLB = 'asia_building.glb';
         const bulding = await loadObject(buildingPath, sx, sy, sz, setLoadingProgress);
