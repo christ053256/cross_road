@@ -100,7 +100,7 @@ const Homepage = () => {
     const handlePlayClick = () => {
         setShowScene(true);
         slimeAudioRef.current.loop = true;
-        slimeAudioRef.current.volume = 1;
+        slimeAudioRef.current.volume = 0.5;
         slimeAudioRef.current.play(); // Play the first background music
 
         vehicleAudioRef.current.loop = true;

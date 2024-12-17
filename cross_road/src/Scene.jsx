@@ -23,6 +23,13 @@ const Scoreboard = ({ score, hit, speed }) => (
 );
 
 const HitPause = ({ onContinue, onQuit }) => {
+  const hitSoundEffect = useRef(new Audio('/dio_timestop.mp3'));
+
+  useEffect(() => {
+    hitSoundEffect.current.loop = false;
+    hitSoundEffect.current.volume = 1;
+    hitSoundEffect.current.play(); // Play the sound once when the component mounts
+  }, []); // Empty dependency array ensures this runs only once on mount
   return (
     <div className="HitPause">
       <h2>Game over!</h2>
@@ -35,8 +42,17 @@ const HitPause = ({ onContinue, onQuit }) => {
   );
 };
 
-const GameFinish =({onContinue}) =>{
-  return(
+const GameFinish = ({ onContinue }) => {
+  const finishSoundEffect = useRef(new Audio('/levelup.mp3'));
+
+  useEffect(() => {
+    finishSoundEffect.current.currentTime = 1;
+    finishSoundEffect.current.loop = false;
+    finishSoundEffect.current.volume = 1;
+    finishSoundEffect.current.play(); // Play the sound once when the component mounts
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  return (
     <div className="GameFinish">
       <h2>You made it!</h2>
       <h3>Advancing to the next level!</h3>
@@ -299,37 +315,46 @@ const Scene = () => {
             player.rotation.y = yaw + Math.PI;
         }
 
-        function checkCollision(){
+        function checkCollision() {
           const playerBox = new THREE.Box3().setFromObject(player);
+          const hitSoundEffect = new Audio('/splat.mp3'); // Create the audio instance once
+          
           allCars.forEach((car) => {
             const carBox = new THREE.Box3().setFromObject(car);
             if (playerBox.intersectsBox(carBox)) {
-              //Restart here all
-              player.position.x = -(platformWidth/2)-10;
+              // Configure and play the audio
+              hitSoundEffect.loop = false;
+              hitSoundEffect.volume = 1;
+              hitSoundEffect.play();
+   
+              // Restart here
+              player.position.x = -(platformWidth / 2) - 10;
               player.position.z = 0;
-              
+            
               setHit((prev) => {
-                let newHit
-                if(prev === 1){
+                let newHit;
+                if (prev === 1) {
                   newHit = 5;
                   setScore(0);
                   setCarSpeed(0.5);
                   setShowHit(true);
                   setShowScoreBoard(false);
-                }else{
+                } else {
                   newHit = prev - 1;
                 }
                 return newHit;
               });
-              const movement = ['w', 's', 'a', 'd', 'arrowUp', 'arrowDown', 'arrowRight', 'arrowLeft'];
-              movement.forEach((keys) =>{
-                keysPressed[keys] = false;
+        
+              const movement = [' ', 'q', 'w', 's', 'a', 'd', 'arrowUp', 'arrowDown', 'arrowRight', 'arrowLeft'];
+              movement.forEach((key) => {
+                keysPressed[key] = false;
               });
-
             }
           });
+        
           allCars = new Set();
         }
+        
 
         function finishLine() {
           if (player.position.x >= 170) {
