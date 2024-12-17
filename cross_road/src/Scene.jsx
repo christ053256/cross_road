@@ -18,7 +18,7 @@ const Scoreboard = ({ score, hit, speed }) => (
   <div className="scoreboard">
     <h2>Level: {score+1}</h2>
     <h2>Life: {hit}</h2>
-    <h2>Car Speed: {speed}</h2>
+    <h2>Car Speed: {speed} km/h</h2>
   </div>
 );
 
@@ -191,35 +191,11 @@ const Scene = () => {
     }
 
 
-    async function spawnCar(x = 0, z = 0, sx = 4, sy = 4, sz = 4, rotation = Math.PI) {
-      try {
-        const vehicles = ['car-police.glb', 'car-ambulance-pickup.glb', 'car-taxi.glb', 'car-baywatch.glb', 'car-tow-truck.glb', 'car-truck-dump.glb'];
-        const car = await loadObject(vehicles[Math.floor(Math.random() * vehicles.length)], sx, sy, sz, setLoadingProgress);
-        setLoading(false);
-        car.position.set(x, groundLevel - 0.6, z);
-        car.castShadow = true;
-        car.receiveShadow = true;
-        car.rotation.y = rotation;
-    
-        platform.add(car);
-        carMove(car);
-    
-        // Add the car to the active set
-        activeCars.add(car.position.z);
-        // Set a timeout to remove the car after a period of time
-        setTimeout(() => {
-          removeGLBModel(car);
-          activeCars.delete(car.position.z); // Remove from active cars once it's gone
-        }, 6000); // Remove car after 6 seconds
-      } catch (error) {
-        console.error('Error loading vehicle:', error);
-        setLoading(false);
-      }
-    }
+   
 
     async function loadBuilding(buildingPath, x = 0, z = 0, y = 0, sx = 0.5, sy = 0.5, sz = 0.5, rotation = Math.PI) {
-      setLoading(true);
       try {
+        setLoading(true);
         //const buildingGLB = 'asia_building.glb';
         const bulding = await loadObject(buildingPath, sx, sy, sz, setLoadingProgress);
         setLoading(false);
@@ -251,6 +227,32 @@ const Scene = () => {
         }
         allCars.add(car);
       }, 4);
+    }
+
+    async function spawnCar(x = 0, z = 0, sx = 4, sy = 4, sz = 4, rotation = Math.PI) {
+      try {
+        const vehicles = ['car-police.glb', 'car-ambulance-pickup.glb', 'car-taxi.glb', 'car-baywatch.glb', 'car-tow-truck.glb', 'car-truck-dump.glb'];
+        const car = await loadObject(vehicles[Math.floor(Math.random() * vehicles.length)], sx, sy, sz, setLoadingProgress);
+        setLoading(false);
+        car.position.set(x, groundLevel - 0.6, z);
+        car.castShadow = true;
+        car.receiveShadow = true;
+        car.rotation.y = rotation;
+    
+        platform.add(car);
+        carMove(car);
+    
+        // Add the car to the active set
+        activeCars.add(car.position.z);
+        // Set a timeout to remove the car after a period of time
+        setTimeout(() => {
+          removeGLBModel(car);
+          activeCars.delete(car.position.z); // Remove from active cars once it's gone
+        }, 10000); // Remove car after 10 seconds
+      } catch (error) {
+        console.error('Error loading vehicle:', error);
+        setLoading(false);
+      }
     }
 
     function removeGLBModel(model) {
@@ -509,8 +511,8 @@ const Scene = () => {
       //async function loadBuilding(buildingPath, x = 0, z = 0, y = 0, sx = 0.5, sy = 0.5, sz = 0.5, rotation = Math.PI)
       loadBuilding('asia_building.glb',-300, z, groundLevel-0.8);
       loadBuilding('asia_building.glb',300, z, groundLevel-0.8);
-      loadBuilding('chicago_buildings.glb',z, -230, groundLevel+6, 1, 1, 1, 2* Math.PI);
-      loadBuilding('asia_building.glb',z, 350, groundLevel-0.8);
+      loadBuilding('asia_building.glb',z, -450, groundLevel-4, 1, 1, 1, 2* Math.PI);
+      loadBuilding('asia_building.glb',z, 450, groundLevel-0.8);
     });
 
 
@@ -631,7 +633,7 @@ const Scene = () => {
         }
       } />}
       
-      {showScoreBoard && <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*10)} />}
+      {showScoreBoard && <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*100)} />}
       <div ref={mountRef} />
       {loading && <div className="loading-indicator">Loading... {loadingProgress.toFixed(2)}%</div>}
     </div>
