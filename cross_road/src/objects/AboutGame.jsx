@@ -47,7 +47,7 @@ const GamePage = () => {
           <section className="section">
             <h2>Story</h2>
             <div className="story-container">
-              <p>In the heart of a bustling modern city, a quirky slime named <strong>Rimuru</strong> finds itself stranded on the wrong side of a chaotic road. Rimuru must cross this hazardous street filled with speeding cars, skateboarding teens, and delivery robots. Can it make it to the peaceful meadows beyond?</p>
+              <p>In the heart of a bustling modern city, a quirky slime named <strong>Rimuru</strong> finds itself stranded on the wrong side of a chaotic road. Rimuru must cross this hazardous street filled with speeding cars, trucks, and vans. Can it make it to the peaceful meadows beyond?</p>
               <p>Guide Rimuru through the dangerous urban landscape, using its slime agility to dodge, jump, and teleport. Every move is a test of skill, and the further you go, the more intense the traffic becomes. It's a race against time and hazard to find safety on the other side!</p>
             </div>
           </section>
