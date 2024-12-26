@@ -102,7 +102,7 @@ const Scene = ({ onQuit }) => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [carSpeed, setCarSpeed] = useState(0.5);
   const [score, setScore] = useState(0);
-  const [hit, setHit] = useState(1);
+  const [hit, setHit] = useState(5);
   const [showHit, setShowHit] = useState(false);
   const [showScoreBoard, setShowScoreBoard] = useState(false);
   const [showFinish, setShowFinish] = useState(false);
