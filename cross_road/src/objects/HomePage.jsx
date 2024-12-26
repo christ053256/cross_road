@@ -145,7 +145,7 @@ const Homepage = () => {
                     <button className="play-button" onClick={handleAboutClick}>About Game</button>
                 </div>
             ) : (
-                <Scene />
+                <Scene onQuit={() => setShowScene(false)} />
             )}
         </div>
     );

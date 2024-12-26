@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './Scene.css';
 import gsap from 'gsap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 // Objects Import
 import directionalLight from './objects/DirectionalLight';
@@ -10,9 +10,11 @@ import pointLight from './objects/PointLight';
 import loadObject from './objects/loadObject';
 import platForm from './objects/Platform';
 
+//Sky background: texture loader
 const background = new THREE.TextureLoader().load('blue-sky.png');
 let camera, scene, renderer;
 
+//Display Score Board
 const Scoreboard = ({ score, hit, speed }) => (
   <div className="scoreboard">
     <h2>Level: {score+1}</h2>
@@ -25,17 +27,10 @@ const HitPause = ({ onContinue, onQuit }) => {
   const hitSoundEffect = useRef(new Audio('/dio_timestop.mp3'));
 
   useEffect(() => {
-    const audio = hitSoundEffect.current;
-    audio.loop = false;
-    audio.volume = 1;
-    audio.play();
-
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }, []);
-
+    hitSoundEffect.current.loop = false;
+    hitSoundEffect.current.volume = 1;
+    hitSoundEffect.current.play(); // Play the sound once when the component mounts
+  }, []); // Empty dependency array ensures this runs only once on mount
   return (
     <div className="HitPause">
       <h2>Game over!</h2>
@@ -52,17 +47,11 @@ const GameFinish = ({ onContinue }) => {
   const finishSoundEffect = useRef(new Audio('/levelup.mp3'));
 
   useEffect(() => {
-    const audio = finishSoundEffect.current;
-    audio.currentTime = 1;
-    audio.loop = false;
-    audio.volume = 1;
-    audio.play();
-
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }, []);
+    finishSoundEffect.current.currentTime = 1;
+    finishSoundEffect.current.loop = false;
+    finishSoundEffect.current.volume = 1;
+    finishSoundEffect.current.play(); // Play the sound once when the component mounts
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
     <div className="GameFinish">
@@ -75,17 +64,24 @@ const GameFinish = ({ onContinue }) => {
   );
 };
 
-const GameIntro = ({ onContinue }) => (
-  <div className="GameIntro">
-    <h2>Welcome to Slime on Road</h2>
-    <p>Help Rimuru cross the chaotic streets without getting hit 5 times!</p>
-    <p>Navigate through speeding vehicles. Use Rimuru's special abilities like jumping, teleporting press 'q' 3 seconds coldown, and quick reflexes to survive!</p>
-    <div className="button-container">
-      <button className="continue-button" onClick={onContinue}>Continue</button>
+const GameIntro = ({ onContinue }) => {
+  return (
+    <div className="GameIntro">
+      <h2>Welcome to Slime on Road</h2>
+      <p>Help Rimuru cross the chaotic streets without getting hit 5 times!</p>
+      <p>
+        Navigate through speeding vehicles. Use Rimuru’s special abilities like jumping, teleporting press 'q' 3 seconds coldown, and quick reflexes to survive!
+      </p>
+      <div className="button-container">
+        <button className="continue-button" onClick={onContinue}>Continue</button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
+
+
+// Resize handling
 const handleResize = () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -95,69 +91,42 @@ const handleResize = () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 };
 
-const Scene = ({ onQuit }) => {
+//Main Scene
+const Scene = () => {
+  //Variables initialization
   const mountRef = useRef(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize the navigate hook
   const [loading, setLoading] = useState(true);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [carSpeed, setCarSpeed] = useState(0.5);
-  const [score, setScore] = useState(0);
-  const [hit, setHit] = useState(1);
+  const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
+  const [carSpeed, setCarSpeed] = useState(0.5); // state of Car speed
+  const [score, setScore] = useState(0); // state of score
+  const [hit, setHit] = useState(1); // state of player being hit by a vehicle
   const [showHit, setShowHit] = useState(false);
   const [showScoreBoard, setShowScoreBoard] = useState(false);
   const [showFinish, setShowFinish] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [pause, setPause] = useState(false);
 
+  //For Car objects and Position
   let activeCars = new Set();
   let allCars = new Set();
-  let myPlayer;
-  const speed = 0.3;
-  const keysPressed = {};
-  const sensitivity = 0.0005;
+
+  let myPlayer; // Player hit box
+  const speed = 0.3; //Player speed
+  const keysPressed = {}; // Player's keys
+  const sensitivity = 0.0005;  // Mouse sensitivity (for yaw and pitch)
   let yaw = 0;
   let pitch = 0;
   let isJumping = false;
   let verticalVelocity = 0;
   const gravity = -0.0085;
+
+  // New variable for dashing
   let isDashing = false;
-  const dashDistance = 5;
-  const dashCooldown = 3000;
-  let lastDashTime = 0;
+  const dashDistance = 5; // Dash forward 3 blocks
+  const dashCooldown = 3000; // Time (in ms) before the dash can be used again
+  let lastDashTime = 0; // Store the last time the dash was used
 
-  const cleanupResources = () => {
-    // Stop all audio
-    const audioElements = document.getElementsByTagName('audio');
-    Array.from(audioElements).forEach(audio => {
-      audio.pause();
-      audio.currentTime = 0;
-    });
-
-    // Clean up Three.js
-    if (renderer) {
-      renderer.dispose();
-      if (renderer.domElement && mountRef.current) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-    }
-
-    // Clear event listeners
-    window.removeEventListener('resize', handleResize);
-  };
-
-  const handleContinue = () => {
-    setShowHit(false);
-    setShowScoreBoard(true);
-  };
-
-  const handleQuit = () => {
-    cleanupResources();
-    onQuit();
-    navigate('/', { replace: true });
-  };
-
-  // Rest of your existing Scene component code...
-  // (Keep all the useEffect hooks, game logic, and render methods the same)
   useEffect(() => {
     // Initialize scene, camera, and renderer
     scene = new THREE.Scene();
@@ -634,25 +603,37 @@ const Scene = ({ onQuit }) => {
     };    
   }, []); // The empty dependency array ensures that this effect runs only once
 
+  const handleContinue = () => {
+    console.log('Continuing the game');
+    setShowHit(false);
+    setShowScoreBoard(true);
+  };
+
+  const handleQuit = () => {
+    console.log('Leaving the game');
+    navigate('/'); // Navigate to homepage
+  };
+
   return (
     <div>
       {showHit && <HitPause onContinue={handleContinue} onQuit={handleQuit} />}
-      {showFinish && (
-        <GameFinish 
-          onContinue={() => {
-            setShowFinish(false);
-            setShowScoreBoard(true);
-          }} 
-        />
-      )}
-      {showIntro && (
-        <GameIntro 
-          onContinue={() => {
-            setShowIntro(false);
-            setShowScoreBoard(true);
-          }} 
-        />
-      )}
+
+      {showFinish && <GameFinish onContinue={() => 
+        {
+          console.log('Continuing the game');
+          setShowFinish(false);
+          setShowScoreBoard(true);
+        }
+      } />}
+
+      {showIntro && <GameIntro onContinue={() => 
+        {
+          console.log('Continuing the game');
+          setShowIntro(false);
+          setShowScoreBoard(true);
+        }
+      } />}
+      
       {showScoreBoard && <Scoreboard score={score} hit={hit} speed={Math.round(carSpeed*100)} />}
       <div ref={mountRef} />
       {loading && <div className="loading-indicator">Loading... {loadingProgress.toFixed(2)}%</div>}
