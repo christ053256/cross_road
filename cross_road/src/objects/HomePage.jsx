@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
 import Scene from '../Scene.jsx';
 
@@ -12,17 +12,34 @@ const Homepage = () => {
         height: window.innerHeight,
     });
     const mountRef = useRef(null);
-    const slimeAudioRef = useRef(new Audio('/slimebgm.mp3')); // Reference for the first audio
-    const vehicleAudioRef = useRef(new Audio('/vehiclebgm.mp3')); // Reference for the second audio
+    const slimeAudioRef = useRef(new Audio('/slimebgm.mp3'));
+    const vehicleAudioRef = useRef(new Audio('/vehiclebgm.mp3'));
     const vehicleAudioRef1 = useRef(new Audio('/vehiclebgm.mp3'));
     const vehicleAudioRef2 = useRef(new Audio('/vehiclebgm.mp3'));
     const vehicleAudioRef3 = useRef(new Audio('/vehiclebgm.mp3'));
     const vehicleAudioRef4 = useRef(new Audio('/vehiclebgm.mp3'));
 
-    const navigate = useNavigate(); // useNavigate hook for navigation
+    const navigate = useNavigate();
+
+    const stopAllAudio = () => {
+        const audioRefs = [
+            slimeAudioRef,
+            vehicleAudioRef,
+            vehicleAudioRef1,
+            vehicleAudioRef2,
+            vehicleAudioRef3,
+            vehicleAudioRef4
+        ];
+        
+        audioRefs.forEach(ref => {
+            if (ref.current) {
+                ref.current.pause();
+                ref.current.currentTime = 0;
+            }
+        });
+    };
 
     useEffect(() => {
-        // Function to update the window size
         const handleResize = () => {
             setWindowSize({
                 width: window.innerWidth,
@@ -30,18 +47,15 @@ const Homepage = () => {
             });
         };
 
-        // Add event listener for resize
         window.addEventListener('resize', handleResize);
-
-        // Cleanup listener on component unmount
         return () => {
             window.removeEventListener('resize', handleResize);
+            stopAllAudio();
         };
     }, []);
 
     useEffect(() => {
         if (!showScene) {
-            // THREE.js Setup
             const scene = new THREE.Scene();
             scene.background = new THREE.Color('#a8d8f0');
 
@@ -51,9 +65,8 @@ const Homepage = () => {
             const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(windowSize.width, windowSize.height);
             renderer.shadowMap.enabled = true;
-            mountRef.current.appendChild(renderer.domElement);
+            mountRef.current?.appendChild(renderer.domElement);
 
-            // Light
             const light = new THREE.DirectionalLight(0xffffff, 1);
             light.position.set(5, 5, 5);
             light.castShadow = true;
@@ -62,7 +75,6 @@ const Homepage = () => {
             const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
             scene.add(ambientLight);
 
-            // Platform
             const platformGeometry = new THREE.CircleGeometry(2, 32);
             const platformMaterial = new THREE.MeshStandardMaterial({ color: 0x6aa84f });
             const platform = new THREE.Mesh(platformGeometry, platformMaterial);
@@ -70,7 +82,6 @@ const Homepage = () => {
             platform.receiveShadow = true;
             scene.add(platform);
 
-            // Slime Model
             const loader = new GLTFLoader();
             loader.load('slime.glb', (gltf) => {
                 const slime = gltf.scene;
@@ -82,7 +93,6 @@ const Homepage = () => {
                 slime.position.y = 1;
                 scene.add(slime);
 
-                // Animation
                 const animate = () => {
                     slime.rotation.y += 0.01;
                     renderer.render(scene, camera);
@@ -91,48 +101,38 @@ const Homepage = () => {
                 animate();
             });
 
-            // Cleanup
             return () => {
-                while (mountRef.current.firstChild) {
+                while (mountRef.current?.firstChild) {
                     mountRef.current.removeChild(mountRef.current.firstChild);
                 }
             };
         }
-    }, [showScene, windowSize]); // Re-run this effect if windowSize changes
+    }, [showScene, windowSize]);
 
     const handlePlayClick = () => {
         setShowScene(true);
-        slimeAudioRef.current.loop = true;
-        slimeAudioRef.current.volume = 0.5;
-        slimeAudioRef.current.play(); // Play the first background music
+        const audioRefs = [
+            { ref: slimeAudioRef, time: 0 },
+            { ref: vehicleAudioRef, time: 0 },
+            { ref: vehicleAudioRef1, time: 10 },
+            { ref: vehicleAudioRef2, time: 20 },
+            { ref: vehicleAudioRef3, time: 30 },
+            { ref: vehicleAudioRef4, time: 40 }
+        ];
 
-        vehicleAudioRef.current.loop = true;
-        vehicleAudioRef.current.volume = 0.5;
-        vehicleAudioRef.current.play(); // Play the second background music
-
-        vehicleAudioRef1.current.currentTime = 10;
-        vehicleAudioRef1.current.loop = true;
-        vehicleAudioRef1.current.volume = 0.5;
-        vehicleAudioRef1.current.play(); // Play the second background music
-
-        vehicleAudioRef2.current.currentTime = 20;
-        vehicleAudioRef2.current.loop = true;
-        vehicleAudioRef2.current.volume = 0.5;
-        vehicleAudioRef2.current.play(); // Play the second background music
-
-        vehicleAudioRef3.current.currentTime = 30;
-        vehicleAudioRef3.current.loop = true;
-        vehicleAudioRef3.current.volume = 0.5;
-        vehicleAudioRef3.current.play(); // Play the second background music
-
-        vehicleAudioRef4.current.currentTime = 40;
-        vehicleAudioRef4.current.loop = true;
-        vehicleAudioRef4.current.volume = 0.5;
-        vehicleAudioRef4.current.play(); // Play the second background music
+        audioRefs.forEach(({ ref, time }) => {
+            if (ref.current) {
+                ref.current.currentTime = time;
+                ref.current.loop = true;
+                ref.current.volume = 0.5;
+                ref.current.play().catch(console.error);
+            }
+        });
     };
 
     const handleAboutClick = () => {
-        navigate('/about-game'); // Navigate to the About Game page
+        stopAllAudio();
+        navigate('/about-game');
     };
 
     return (
@@ -142,7 +142,6 @@ const Homepage = () => {
                 <div className="play-button-container">
                     <h1 className="slime-title">Slime on Road?</h1>
                     <button className="play-button" onClick={handlePlayClick}>Play</button>
-                    {/* About Game Button */}
                     <button className="play-button" onClick={handleAboutClick}>About Game</button>
                 </div>
             ) : (

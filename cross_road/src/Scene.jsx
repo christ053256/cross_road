@@ -100,7 +100,7 @@ const Scene = () => {
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
   const [carSpeed, setCarSpeed] = useState(0.5); // state of Car speed
   const [score, setScore] = useState(0); // state of score
-  const [hit, setHit] = useState(1); // state of player being hit by a vehicle
+  const [hit, setHit] = useState(5); // state of player being hit by a vehicle
   const [showHit, setShowHit] = useState(false);
   const [showScoreBoard, setShowScoreBoard] = useState(false);
   const [showFinish, setShowFinish] = useState(false);
