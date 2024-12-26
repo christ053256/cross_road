@@ -24,8 +24,15 @@
 /* Play Button Container */
 .play-button-container {
     position: absolute;
+    top: 50%; /* Vertically center the container */
+    left: 50%; /* Horizontally center the container */
+    transform: translate(-50%, -50%); /* Adjust for exact centering */
     z-index: 10; /* Ensures visibility over the background */
+    display: flex;
+    flex-direction: column; /* Arrange the child elements (like buttons) vertically */
+    align-items: center; /* Center align the child elements horizontally */
 }
+
 
 /* Play Button */
 .play-button {
@@ -34,6 +41,7 @@
     color: white;
     border: 3px solid #3b6f91; /* Slightly darker border */
     padding: 20px 40px;
+    margin-bottom: 10px;
     font-size: 24px;
     text-transform: uppercase;
     cursor: pointer;

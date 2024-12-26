@@ -1,0 +1,254 @@
+.game-page {
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+}
+/* Back Button */
+.back-button {
+    font-family: 'Press Start 2P', cursive; /* Retro pixelated font */
+    background-color: #5d9bff; /* Slime blue color */
+    color: white;
+    border: 3px solid #3b6f91; /* Slightly darker border */
+    padding: 15px 30px; /* Slightly smaller padding for consistency */
+    font-size: 20px; /* Consistent font size */
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Pixelated glow effect */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    margin-top: 20px; /* Space above the button */
+    margin-bottom: 20px; /* Space above the button */
+}
+
+.back-button:hover {
+    transform: scale(1.1); /* Slight hover zoom effect */
+    box-shadow: 0 0 30px rgba(93, 155, 255, 0.8); /* Enhanced glow on hover */
+}
+
+.back-button:focus {
+    outline: none;
+}
+
+.slime-background {
+    background: linear-gradient(135deg, #1a2a6c, #2a4858);
+    height: 100vh; /* Changed from min-height to height */
+    padding: 0;
+    margin-top: 0; /* Ensures no extra space at the top */
+}
+
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    top: 0; /* Ensures no offset from the top */
+}
+
+.title {
+    text-align: center;
+    color: #4ae3ff;
+    font-size: 3.5rem;
+    margin-bottom: 3rem;
+    text-shadow: 0 0 10px rgba(74, 227, 255, 0.5);
+}
+
+.section {
+    margin-bottom: 4rem;
+}
+
+.section h2 {
+    color: #4ae3ff;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Mechanics Section */
+.mechanics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.mechanic-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.mechanic-card:hover {
+    transform: translateY(-5px);
+}
+
+.slime-icon {
+    width: 80px;
+    height: 80px;
+    background: #4ae3ff;
+    border-radius: 40%;
+    margin: 0 auto 1rem;
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+/* Add a sample background image or icon for the slime icon */
+.slime-icon.bounce {
+    background-image: url('/path-to-slime-bounce.png');
+    background-size: cover;
+}
+
+.slime-icon.split {
+    background-image: url('/path-to-slime-split.png');
+    background-size: cover;
+}
+
+.slime-icon.evolve {
+    background-image: url('/path-to-slime-evolve.png');
+    background-size: cover;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Story Section */
+.story-container {
+    background: rgba(255, 255, 255, 0.2); /* Increased opacity for better contrast */
+    padding: 2rem;
+    border-radius: 15px;
+    color: #fff;
+    line-height: 1.6;
+}
+
+.story-container p {
+    margin-bottom: 1rem;
+}
+
+/* Team Section */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.team-member {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-5px);
+}
+
+/* Styling for the avatar */
+.member-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: #5d9bff; /* Slime blue */
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(93, 155, 255, 0.8); /* Glowing slime effect */
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.member-avatar {
+    width: 100px; /* Set the width to 100px */
+    height: 100px; /* Set the height to 100px */
+    background: #4ae3ff; /* Slime blue background */
+    border-radius: 50%; /* Make it circular */
+    margin: 0 auto 1rem; /* Center the avatar and add bottom margin */
+    box-shadow: 0 0 10px rgba(93, 155, 255, 0.8); /* Glowing slime effect */
+    background-size: cover; /* Ensure any background image or icon is properly sized */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add a smooth transition effect */
+}
+
+/* Avatar hover effect */
+.member-avatar:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+    box-shadow: 0 0 15px rgba(93, 155, 255, 1); /* Enhanced glowing effect on hover */
+}
+
+
+.avatar1 {
+    background-image: url('/me.jpg');
+}
+
+.avatar2 {
+    background-image: url('/desoloc.jpg');
+}
+
+.avatar3 {
+    background-image: url('/bulac.jpg');
+}
+
+/* Style for team member's name */
+.team-member h3 {
+    font-family: 'Press Start 2P', cursive; /* Retro pixel font */
+    color: #5d9bff; /* Slime blue color */
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 5px rgba(93, 155, 255, 0.7), 0 0 10px rgba(93, 155, 255, 0.5); /* Glowing effect */
+}
+
+/* Style for team member's description (role) */
+.team-member p {
+    font-family: 'Arial', sans-serif;
+    color: #d1eaff; /* Light slime blue for softer contrast */
+    font-size: 14px;
+    text-shadow: 0 0 4px rgba(79, 129, 199, 0.5), 0 0 6px rgba(93, 155, 255, 0.3); /* Subtle glow */
+}
+
+/* Style for team member's anchor (links) */
+.team-member a {
+    text-decoration: none;
+    color: #a8d8f0; /* Light cyan color */
+    font-weight: bold;
+    border-bottom: 2px solid #5d9bff; /* Blue underline */
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Hover effect for the link */
+.team-member a:hover {
+    color: #5d9bff; /* Highlighted blue */
+    border-color: #a8d8f0; /* Light cyan underline on hover */
+}
+
+
+
+
+
+/* Optional: Add a container for hover effects or animation */
+.team-member:hover .member-avatar {
+    box-shadow: 0 0 15px rgba(93, 155, 255, 1); /* Enhanced glow on hover */
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-container {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+    }
+
+    .section h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Further optimize layout for smaller screens */
+@media (max-width: 480px) {
+    .mechanics-grid, .team-grid {
+        grid-template-columns: 1fr;
+    }
+}

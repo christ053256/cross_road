@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './Homepage.css';
 import Scene from '../Scene.jsx';
 
@@ -17,6 +18,8 @@ const Homepage = () => {
     const vehicleAudioRef2 = useRef(new Audio('/vehiclebgm.mp3'));
     const vehicleAudioRef3 = useRef(new Audio('/vehiclebgm.mp3'));
     const vehicleAudioRef4 = useRef(new Audio('/vehiclebgm.mp3'));
+
+    const navigate = useNavigate(); // useNavigate hook for navigation
 
     useEffect(() => {
         // Function to update the window size
@@ -128,6 +131,10 @@ const Homepage = () => {
         vehicleAudioRef4.current.play(); // Play the second background music
     };
 
+    const handleAboutClick = () => {
+        navigate('/about-game'); // Navigate to the About Game page
+    };
+
     return (
         <div className="homepage-container">
             <div ref={mountRef} className="slime-background"></div>
@@ -135,6 +142,8 @@ const Homepage = () => {
                 <div className="play-button-container">
                     <h1 className="slime-title">Slime on Road?</h1>
                     <button className="play-button" onClick={handlePlayClick}>Play</button>
+                    {/* About Game Button */}
+                    <button className="play-button" onClick={handleAboutClick}>About Game</button>
                 </div>
             ) : (
                 <Scene />

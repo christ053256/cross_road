@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './Scene.css';
 import gsap from 'gsap';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 // Objects Import
 import directionalLight from './objects/DirectionalLight';
@@ -94,11 +95,12 @@ const handleResize = () => {
 const Scene = () => {
   //Variables initialization
   const mountRef = useRef(null);
+  const navigate = useNavigate(); // Initialize the navigate hook
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0); // State for loading progress
   const [carSpeed, setCarSpeed] = useState(0.5); // state of Car speed
   const [score, setScore] = useState(0); // state of score
-  const [hit, setHit] = useState(5); // state of player being hit by a vehicle
+  const [hit, setHit] = useState(1); // state of player being hit by a vehicle
   const [showHit, setShowHit] = useState(false);
   const [showScoreBoard, setShowScoreBoard] = useState(false);
   const [showFinish, setShowFinish] = useState(false);
@@ -601,21 +603,20 @@ const Scene = () => {
     };    
   }, []); // The empty dependency array ensures that this effect runs only once
 
+  const handleContinue = () => {
+    console.log('Continuing the game');
+    setShowHit(false);
+    setShowScoreBoard(true);
+  };
 
+  const handleQuit = () => {
+    console.log('Leaving the game');
+    navigate('/'); // Navigate to homepage
+  };
 
   return (
     <div>
-      {showHit && <HitPause onContinue={() => 
-        {
-          console.log('Continuing the game');
-          setShowHit(false);
-          setShowScoreBoard(true);
-        }
-      } 
-        onQuit={
-          () => console.log('Leaving the game')
-        }
-      />}
+      {showHit && <HitPause onContinue={handleContinue} onQuit={handleQuit} />}
 
       {showFinish && <GameFinish onContinue={() => 
         {

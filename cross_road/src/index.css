@@ -5,7 +5,6 @@
 }
 
 html, body {
-  overflow: hidden; /* Prevent scrolling */
   margin: 0; /* Ensure no margin is applied */
   padding: 0; /* Ensure no padding is applied */
   width: 100vw; /* Full width */
